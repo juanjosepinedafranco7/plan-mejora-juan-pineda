@@ -1,1 +1,105 @@
-<p>recipe-list works!</p>
+<nav class="breadcrumb">Inicio / Recetas</nav>
+
+<div class="page-header">
+  <h1>Recetas</h1>
+  <!-- Navega a /recipes/new -->
+  <a routerLink="/recipes/new" class="btn btn-primary">+ Nueva receta</a>
+</div>
+
+<!-- Buscador: [formControl] enlaza el input con searchControl del .ts
+     (keyup.enter) busca al presionar Enter -->
+<div class="search-bar">
+  <input
+    type="text"
+    class="form-control"
+    placeholder="Buscar receta por nombre..."
+    [formControl]="searchControl"
+    (keyup.enter)="search()"
+  />
+  <button type="button" class="btn" (click)="search()">Buscar</button>
+</div>
+
+<div class="card table-card">
+  <p class="state-msg" *ngIf="loading">Cargando recetas...</p>
+  <div class="alert alert-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+  <div class="table-wrapper" *ngIf="!loading">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Imagen</th>
+          <th>Nombre</th>
+          <th>Cocina</th>
+          <th>Dificultad</th>
+          <th>Prep.</th>
+          <th>Cocción</th>
+          <th>Porciones</th>
+          <th>Rating</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- *ngFor repite la fila por cada receta. [src] enlaza un atributo a una variable. -->
+        <tr *ngFor="let recipe of recipes">
+          <td><img class="thumb" [src]="recipe.image" [alt]="recipe.name" /></td>
+          <td class="fw">{{ recipe.name }}</td>
+          <td><span class="badge badge-blue">{{ recipe.cuisine }}</span></td>
+          <td>
+            <!-- ngClass agrega una clase calculada: badge-easy, badge-medium o badge-hard -->
+            <span class="badge" [ngClass]="'badge-' + recipe.difficulty.toLowerCase()">
+              {{ recipe.difficulty }}
+            </span>
+          </td>
+          <td>{{ recipe.prepTimeMinutes }} min</td>
+          <td>{{ recipe.cookTimeMinutes }} min</td>
+          <td>{{ recipe.servings }}</td>
+          <!-- Pipe "number": formatea el número con mínimo 1 y máximo 2 decimales -->
+          <td>{{ recipe.rating | number: '1.2-2' }}</td>
+          <td>
+            <div class="actions">
+              <!-- [routerLink] con arreglo arma /recipes/5 y /recipes/5/edit -->
+              <a class="btn btn-sm" [routerLink]="['/recipes', recipe.id]">Ver</a>
+              <a class="btn btn-sm" [routerLink]="['/recipes', recipe.id, 'edit']">Editar</a>
+              <button type="button" class="btn btn-sm btn-danger" (click)="deleteRecipe(recipe)">Eliminar</button>
+            </div>
+          </td>
+        </tr>
+
+        <tr *ngIf="recipes.length === 0">
+          <td class="empty" colspan="9">No se encontraron recetas.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-footer" *ngIf="!loading">
+    <span>Mostrando {{ from }} – {{ to }} de {{ total }}</span>
+
+    <div class="pagination">
+      <button type="button" class="page-btn" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">
+        Anterior
+      </button>
+
+      <button
+        type="button"
+        class="page-btn"
+        *ngFor="let page of visiblePages"
+        [class.active]="page === currentPage"
+        (click)="goToPage(page)"
+      >
+        {{ page }}
+      </button>
+
+      <span class="page-dots" *ngIf="showEllipsis">...</span>
+
+      <button
+        type="button"
+        class="page-btn"
+        [disabled]="currentPage === totalPages"
+        (click)="goToPage(currentPage + 1)"
+      >
+        Siguiente
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,1 +1,63 @@
-<p>recipe-form works!</p>
+<nav class="breadcrumb">Inicio / Recetas / {{ isEditMode ? 'Editar' : 'Nueva' }}</nav>
+<div class="page-header">
+  <h1>{{ isEditMode ? 'Editar receta' : 'Nueva receta' }}</h1>
+</div>
+
+<div class="card">
+  <p class="state-msg" *ngIf="loading">Cargando datos de la receta...</p>
+  <div class="alert alert-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate *ngIf="!loading">
+    <div class="form-grid">
+      <!-- Nombre: ocupa toda la fila (clase "full") -->
+      <div class="form-group full">
+        <label for="name">Nombre</label>
+        <input id="name" type="text" class="form-control" formControlName="name" [class.is-invalid]="isInvalid('name')" />
+        <div class="error-text" *ngIf="hasError('name', 'required')">El nombre es obligatorio.</div>
+        <div class="error-text" *ngIf="hasError('name', 'minlength')">Debe tener mínimo 3 caracteres.</div>
+      </div>
+
+      <div class="form-group">
+        <label for="cuisine">Cocina</label>
+        <input id="cuisine" type="text" class="form-control" formControlName="cuisine" [class.is-invalid]="isInvalid('cuisine')" />
+        <div class="error-text" *ngIf="hasError('cuisine', 'required')">La cocina es obligatoria.</div>
+      </div>
+
+      <div class="form-group">
+        <label for="difficulty">Dificultad</label>
+        <!-- select con opciones generadas por *ngFor desde el arreglo difficulties -->
+        <select id="difficulty" class="form-control" formControlName="difficulty">
+          <option *ngFor="let level of difficulties" [value]="level">{{ level }}</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="prepTimeMinutes">Tiempo de preparación (min)</label>
+        <input id="prepTimeMinutes" type="number" class="form-control" formControlName="prepTimeMinutes" [class.is-invalid]="isInvalid('prepTimeMinutes')" />
+        <div class="error-text" *ngIf="hasError('prepTimeMinutes', 'required')">El tiempo es obligatorio.</div>
+        <div class="error-text" *ngIf="hasError('prepTimeMinutes', 'greaterThanZero')">Debe ser mayor a 0.</div>
+      </div>
+
+      <div class="form-group">
+        <label for="cookTimeMinutes">Tiempo de cocción (min)</label>
+        <input id="cookTimeMinutes" type="number" class="form-control" formControlName="cookTimeMinutes" [class.is-invalid]="isInvalid('cookTimeMinutes')" />
+        <div class="error-text" *ngIf="hasError('cookTimeMinutes', 'required')">El tiempo es obligatorio.</div>
+        <div class="error-text" *ngIf="hasError('cookTimeMinutes', 'greaterThanZero')">Debe ser mayor a 0.</div>
+      </div>
+
+      <div class="form-group">
+        <label for="servings">Porciones</label>
+        <input id="servings" type="number" class="form-control" formControlName="servings" [class.is-invalid]="isInvalid('servings')" />
+        <div class="error-text" *ngIf="hasError('servings', 'required')">Las porciones son obligatorias.</div>
+        <div class="error-text" *ngIf="hasError('servings', 'min')">Mínimo 1 porción.</div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <a routerLink="/recipes" class="btn">Cancelar</a>
+      <button type="submit" class="btn btn-primary" [disabled]="saving">
+        {{ saving ? 'Guardando...' : isEditMode ? 'Guardar cambios' : 'Crear receta' }}
+      </button>
+    </div>
+  </form>
+</div>

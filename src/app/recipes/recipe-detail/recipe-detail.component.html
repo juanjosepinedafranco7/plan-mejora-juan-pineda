@@ -1,1 +1,40 @@
-<p>recipe-detail works!</p>
+<nav class="breadcrumb">Inicio / Recetas / Detalle</nav>
+<div class="page-header"><h1>Detalle de receta</h1></div>
+
+<p class="state-msg" *ngIf="loading">Cargando receta...</p>
+<div class="alert alert-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+<!-- Solo se pinta cuando recipe ya tiene datos (no es null) -->
+<div class="card detail" *ngIf="recipe">
+  <img [src]="recipe.image" [alt]="recipe.name" />
+
+  <div>
+    <h2>{{ recipe.name }}</h2>
+    <span class="badge badge-blue">{{ recipe.cuisine }}</span>
+    <span class="badge" [ngClass]="'badge-' + recipe.difficulty.toLowerCase()">{{ recipe.difficulty }}</span>
+
+    <div class="info-grid">
+      <div class="info-item"><span>Preparación</span><strong>{{ recipe.prepTimeMinutes }} min</strong></div>
+      <div class="info-item"><span>Cocción</span><strong>{{ recipe.cookTimeMinutes }} min</strong></div>
+      <div class="info-item"><span>Porciones</span><strong>{{ recipe.servings }}</strong></div>
+      <div class="info-item"><span>Calorías por porción</span><strong>{{ recipe.caloriesPerServing }}</strong></div>
+      <div class="info-item"><span>Rating</span><strong>{{ recipe.rating | number: '1.2-2' }}</strong></div>
+      <div class="info-item"><span>Reseñas</span><strong>{{ recipe.reviewCount }}</strong></div>
+    </div>
+
+    <h3>Ingredientes</h3>
+    <ul>
+      <li *ngFor="let ingredient of recipe.ingredients">{{ ingredient }}</li>
+    </ul>
+
+    <h3>Instrucciones</h3>
+    <ol>
+      <li *ngFor="let step of recipe.instructions">{{ step }}</li>
+    </ol>
+
+    <div class="actions">
+      <a routerLink="/recipes" class="btn">Volver</a>
+      <a [routerLink]="['/recipes', recipe.id, 'edit']" class="btn btn-primary">Editar</a>
+    </div>
+  </div>
+</div>
