@@ -1,59 +1,74 @@
-# PlanMejoraAngularJuanPineda
+# Plan de mejora Angular: módulo de recetas
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.27.
+Aplicación Angular con arquitectura modular (NgModules, sin componentes standalone) que consume la API pública [DummyJSON](https://dummyjson.com) e implementa autenticación con token JWT.
 
-## Development server
+## Requisitos
 
-To start a local development server, run:
+- Node.js 18.19+, 20.11+ o 22
+- npm
 
-```bash
-ng serve
+## Instrucciones de ejecución
+
+1. Clonar el repositorio:
+   ```bash
+   git clone https://github.com/juanjosepinedafranco7/plan-mejora-angular-juan-pineda.git
+   cd plan-mejora-angular-juan-pineda
+   ```
+2. Instalar dependencias:
+   ```bash
+   npm install
+   ```
+3. Iniciar el servidor de desarrollo:
+   ```bash
+   npx ng serve
+   ```
+4. Abrir `http://localhost:4200` en el navegador.
+
+## Credenciales de prueba
+
+- Usuario: `emilys`
+- Contraseña: `emilyspass`
+
+## Funcionalidades
+
+- Inicio y cierre de sesión con JWT (`POST /auth/login`).
+- Listado de recetas paginado de 10 en 10 (`limit` y `skip`) con búsqueda por nombre.
+- Detalle de receta por `id`.
+- Formulario reactivo de creación y edición en un mismo componente, con validaciones y precarga de datos.
+- Eliminación de recetas con confirmación previa.
+- Perfil del usuario autenticado (`GET /auth/me`).
+
+> DummyJSON simula las operaciones de crear, editar y eliminar: responde correctamente, pero no guarda los cambios en el servidor.
+
+## Arquitectura
+
+| Módulo | Contenido |
+|---|---|
+| `CoreModule` | `AuthService`, `AuthInterceptor`, `authGuard` y `guestGuard`. Se importa una sola vez en `AppModule`. |
+| `SharedModule` | Barra de navegación, página 404 y reexportación de `CommonModule`, `ReactiveFormsModule` y `RouterModule`. |
+| `AuthModule` | Login con formulario reactivo. Carga perezosa en `/auth`. |
+| `RecipesModule` | Listado, detalle y formulario. Carga perezosa en `/recipes`, protegido con `authGuard`. |
+| `ProfileModule` | Información del usuario. Carga perezosa en `/profile`, protegido con `authGuard`. |
+
+## Estructura del proyecto
+
+```
+src/app/
+├─ core/       servicios, interceptor, guards y modelos
+├─ shared/     navbar y página 404
+├─ auth/       login
+├─ recipes/    listado, detalle, formulario, servicio y modelos
+└─ profile/    perfil del usuario
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Flujo de autenticación
 
-## Code scaffolding
+1. Sin sesión, `authGuard` redirige a `/auth/login`.
+2. `AuthService` envía las credenciales a `POST /auth/login` y guarda el token en `localStorage`.
+3. `AuthInterceptor` agrega `Authorization: Bearer <token>` a cada petición hacia la API.
+4. Con sesión activa, `guestGuard` impide volver al login.
+5. Al cerrar sesión se elimina el token y se redirige al login.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Autor
 
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Juan José Pineda Franco, Ficha 3231651, Análisis y Desarrollo de Software (SENA).
