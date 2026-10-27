@@ -1,1 +1,25 @@
-<p>navbar works!</p>
+<!-- header semántico: la barra superior -->
+<header class="navbar">
+  <div class="navbar-left">
+    <!-- routerLink navega sin recargar la página (reemplaza a href) -->
+    <a routerLink="/recipes" class="brand">
+      <span class="brand-logo">DJ</span>
+      <span>Panel DummyJSON</span>
+    </a>
+
+    <nav class="nav-links">
+      <!-- routerLinkActive agrega la clase "active" cuando la ruta coincide con la actual -->
+      <a routerLink="/recipes" routerLinkActive="active">Recetas</a>
+      <a routerLink="/profile" routerLinkActive="active">Mi perfil</a>
+    </nav>
+  </div>
+
+  <!-- "user$ | async as user": el pipe async se suscribe solo y entrega el valor en "user".
+       Si es null, el *ngIf oculta este bloque. -->
+  <div class="navbar-right" *ngIf="user$ | async as user">
+    <span class="avatar">{{ getInitials(user) }}</span>
+    <span class="user-name">{{ user.firstName }} {{ user.lastName }}</span>
+    <!-- (click) es un evento: ejecuta logout() al hacer clic -->
+    <button type="button" class="logout-btn" (click)="logout()">Cerrar sesión</button>
+  </div>
+</header>
